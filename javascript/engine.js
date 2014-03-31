@@ -74,8 +74,8 @@ engine.renderScene = function () {
   for (var i = -totalLines; i <= totalLines; i++) {
     var offsetX = Math.cos(this.elapsedTime * i * (0.250/totalLines)) * 100;
     var offsetY = Math.sin(this.elapsedTime * i * (0.250/totalLines)) * 100;
-    // this.drawLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
-    this.drawCanvasLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
+    this.drawLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
+    // this.drawBresenhamLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
     // this.drawLine(20, 20, 81, 200, BRIGHT_BLUE);
   }
 };
@@ -100,15 +100,22 @@ engine.drawPixel = function (x, y, color) {
   this.backbufferContext.restore();
 };
 
-engine.drawLine = function (x1, y1, x2, y2, color) {
-  // simple slope formula line drawing algorithm
-  dx = x2 - x1;
-  dy = y2 - y1;
+engine.drawLine = function (x1, y1, x2, y2, color) { // review this to understand better
+  // Digital Differential Analyzer line algorithm (y = mx + c)
+  // referenced from http://www.sunshine2k.de/coding/java/Bresenham/RasterisingLinesCircles.pdf
+  var len = (Math.abs(x2 - x1) >= Math.abs(y2 - y1)) ? Math.abs(x2 - x1) : Math.abs(y2 - y1),
+      dx  = (x2 - x1) / len,
+      dy  = (y2 - y1) / len;
 
-  for (var x = x1; x <= x2; x++) {
-    y = y1 + ((dy * (x - x1)) / dx);
-    this.drawPixel(x, y, color);
+  var x = 0.0 + x1;
+  var y = 0.0 + y1;
+
+  for (var i = 0; i < len; i++) {
+    this.drawPixel(Math.round(x), Math.round(y), color);
+    x += dx;
+    y += dy;
   }
+  this.drawPixel(x2, y2, color); // draw final pixel
 }; 
 
 engine.drawCanvasLine = function (x1, y1, x2, y2, color) {
@@ -129,26 +136,24 @@ engine.drawCanvasLine = function (x1, y1, x2, y2, color) {
   this.backbufferContext.restore();
 }
 
-engine.drawBresenhamLine = function (x1, y1, x2, y2, color) {
+engine.drawBresenhamLine = function (x1, y1, x2, y2, color) { // review this to understand better
   // Bresenham line algorithm
-  var dX  = Math.abs(x2 - x1),
-      dY  = Math.abs(y2 - y1),
-      err = ((dX > dY) ? dX : -dY) / 2,
-      sX  = (x1 < x2) ? 1 : -1,
-      sY  = (y1 < y2) ? 1 : -1;
+  // referenced from http://www.sunshine2k.de/coding/java/Bresenham/RasterisingLinesCircles.pdf
+  var x  = x1,
+      y  = y1,
+      dx = x2 - x1,
+      dy = y2 - y1,
+      e  = ((0.0 + dy) / (0.0 + dx)) - 0.5;
 
-  for (var x = 0; x < dX; x++) {
-    this.drawPixel(x1, y1, color);
-    
-    if (x1 === x2 && y1 === y2) break;
-    
-    e2 = err;
-    if (e2 > -dX) { err -= dY; x1 += sX; }
-    if (e2 <  dY) { err += dX; y1 += sY; }
+  for (var i = 1; i <= dx; i++) {
+    this.drawPixel(x, y, color);
+    while (e >= 0) {
+      y++;
+      e--;
+    }
+    x++;
+    e += (0.0 + dy) / (0.0 + dx);
   }
-
-  unoptimized line drawing algorithm 
-  check if x2 - x1 < 61
 }
 
 engine.drawTriangle = function (x1, y1, x2, y2, x3, y3, color) {};
