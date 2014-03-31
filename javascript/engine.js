@@ -70,14 +70,7 @@ engine.animate = function (modelName) {   // why must all calls to engine data b
 };
 
 engine.renderScene = function () {
-  var totalLines = 5;
-  for (var i = -totalLines; i <= totalLines; i++) {
-    var offsetX = Math.cos(this.elapsedTime * i * (0.250/totalLines)) * 100;
-    var offsetY = Math.sin(this.elapsedTime * i * (0.250/totalLines)) * 100;
-    this.drawLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
-    // this.drawBresenhamLine(this.screenCenterX - offsetX, this.screenCenterY - offsetY, this.screenCenterX + offsetX, this.screenCenterY + offsetY, BRIGHT_BLUE);
-    // this.drawLine(20, 20, 81, 200, BRIGHT_BLUE);
-  }
+  this.drawTriangle(20, 100, 100, 50, 150, 110, BRIGHT_BLUE);
 };
 
 engine.loadModel = function () {
@@ -137,13 +130,13 @@ engine.drawCanvasLine = function (x1, y1, x2, y2, color) {
 }
 
 engine.drawBresenhamLine = function (x1, y1, x2, y2, color) { // review this to understand better
-  // Bresenham line algorithm
-  // referenced from http://www.sunshine2k.de/coding/java/Bresenham/RasterisingLinesCircles.pdf
+  // Bresenham line algorithm using floats (if slow, look at integer verision from same reference)
+  // reference: http://www.sunshine2k.de/coding/java/Bresenham/RasterisingLinesCircles.pdf
   var x  = x1,
       y  = y1,
       dx = x2 - x1,
       dy = y2 - y1,
-      e  = ((0.0 + dy) / (0.0 + dx)) - 0.5;
+      e  = (dy / dx) - 0.5;
 
   for (var i = 1; i <= dx; i++) {
     this.drawPixel(x, y, color);
@@ -152,11 +145,20 @@ engine.drawBresenhamLine = function (x1, y1, x2, y2, color) { // review this to 
       e--;
     }
     x++;
-    e += (0.0 + dy) / (0.0 + dx);
+    e += dy / dx;
   }
 }
 
-engine.drawTriangle = function (x1, y1, x2, y2, x3, y3, color) {};
+engine.drawTriangle = function (x1, y1, x2, y2, x3, y3, color) {
+  this.drawBresenhamLine(x1, y1, x2, y2, color);
+  this.drawBresenhamLine(x2, y2, x3, y3, color);
+  this.drawBresenhamLine(x1, y1, x3, y3, color);
+  this.drawBresenhamLine(20, 100, 100, 50, BRIGHT_BLUE); // algorithm incorrect
+  // this.drawPixel(x1,y1,color);
+  // this.drawPixel(x2,y2,color);
+  // this.drawPixel(x3,y3,color);
+};
+
 engine.fillTriangle = function (x1, y1, x2, y2, x3, y3, color) {};
 engine.drawRectangle = function (x1, y1, x2, y2, x3, y3, x4, y4, color) {};
 engine.fillRectangle = function (x1, y1, x2, y2, x3, y3, x4, y4s, color) {};
