@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>3d Polygon Rasterization Engine</title>
+    <script src="javascript/main.js"></script>
+    <script src="javascript/engine.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <h3>3d Polygon Rasterization Engine</h3>
+      <p>FPS: 
+        <input type="text" name="fps" id="fps" readonly="readonly" size="8" value="Calculating..." style="background-color: lightgray; text-align: center;"></input>
+      </p>
+      <canvas id="canvas" width="240" height="160" style="background-color: black;"></canvas> 
+      <p>Examples: 
+        <select id="select" style="background-color: lightgray;">
+          <option value="pyramid">  pyramid </option>
+          <option value="cube">     cube    </option>
+          <option value="teapot">   teapot  </option>
+          <option value="monkey">   monkey  </option>
+        </select>
+      </p>
+      <br />
+    </div>
+  </body>
+</html>

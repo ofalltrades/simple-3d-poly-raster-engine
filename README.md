@@ -1,0 +1,1 @@
+This is a learning exercise for 3D graphics. The rendering is software. It is not fast. It is not optimized beyond the use of a few quicker rendering algorithms. 
